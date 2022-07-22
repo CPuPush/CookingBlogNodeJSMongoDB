@@ -13,22 +13,30 @@ exports.homepage = async(req, res) => {
         }).limit(limitNumber);
 
 
-        res.render('index', {title : 'Homepage', categories});
+        res.render('index', {title : 'Cooking Blog - Homepage', categories});
     }catch(error){
         res.status(500).send({
             message: error.message || "Error Occured"
         });
     }  
 };
+
+
+
+/**
+ *  GET /categories
+ *  Categories
+ */
+
 exports.exploreCategories = async(req, res) => {
 
     try{
         const limitNumber = 5;
         const categories = await Category.find({
-        }).limit(limitNumber);
+        });
 
 
-        res.render('categories', {title : 'Categories', categories});
+        res.render('categories', {title : 'Cooking Blog - Categories', categories});
     }catch(error){
         res.status(500).send({
             message: error.message || "Error Occured"
