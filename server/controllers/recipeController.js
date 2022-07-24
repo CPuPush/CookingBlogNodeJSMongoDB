@@ -2,6 +2,7 @@ require('../models/database');
 // collection
 const Category = require('../models/Category');
 const Recipe  = require('../models/Recipe')
+
 /**
  *  GET /
  *  Homepage
@@ -89,23 +90,48 @@ exports.exploreCategoriesById = async(req, res) => {
  *  POST /search
  *  search
  */
-exports.searchRecipe = async(req, res)=>{
-    // searchTerm
+exports.searchRecipe = async(req, res) => {
     try{
         let searchTerm = req.body.searchTerm;
-        
+        const recipeSearch = await Recipe.find({$text: {$search: searchTerm, $diacriticSensitive: true}});
+        res.render('search', {title: 'Cooking Blog - Search', recipeSearch});
     }catch(error){
         res.status(500).send({message: error.message || 'Error Occured'});
     }
-
-
-    res.render('search', {title: 'Cooking Blog - Search'});
 };
 
+/**
+ *  Get /explore-latest
+ *  exploreLatest
+ */
+exports.exploreLatest = async(req, res) => {
+    try{
+        const limitNumber = 20;
+        const latest = await Recipe.find({}).sort({_id: -1}).limit(limitNumber);
+        res.render('explore-latest', {title: 'Cooking Blog - Explore Latest', latest});
+    }catch(error){
+        res.status(500).send({message: error.message || 'Error Occured'});
+    }
+};
 
-
-
-
+/**
+ *  Get /explore-random
+ *  exploreRandom as JSON
+ */
+exports.exploreRandom = async(req, res) => {
+    try{
+        const count = await Recipe.find().countDocuments();
+        // console.log(count);
+        // console.log(Math.random());
+        let random = Math.floor(Math.random()* count);
+        // console.log(random);
+        let recipe = await Recipe.findOne().skip(random).exec();
+        // res.json(recipe)
+        res.render('explore-random', {title: 'Cooking Blog - Explore Random', recipe});
+    }catch(error){
+        res.status(500).send({message: error.message || 'Error Occured'});
+    }
+};
 
 
 //! insert data to categories
