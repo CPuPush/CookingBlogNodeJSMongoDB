@@ -134,6 +134,30 @@ exports.exploreRandom = async(req, res) => {
 };
 
 
+/**
+ *  Post /submit-recipe
+ *  
+ */
+exports.submitRecipe = async(req, res) => {
+    try{
+        res.render('submit-recipe', {title: 'Cooking Blog - Submit Recipe'});
+    }catch(error){
+        res.status(500).send({message: error.message || 'Error Occured'});
+    }
+};
+/**
+ *  GET /submit-recipe
+ *  
+ */
+exports.submitRecipeOnPost = async(req, res) => {
+    try{
+        res.render('submit-recipe', {title: 'Cooking Blog - Submit Recipe'});
+    }catch(error){
+        res.status(500).send({message: error.message || 'Error Occured'});
+    }
+};
+
+
 //! insert data to categories
 // const dummyData =
 //     [
