@@ -135,27 +135,70 @@ exports.exploreRandom = async(req, res) => {
 
 
 /**
- *  Post /submit-recipe
+ *  get /submit-recipe
  *  
  */
 exports.submitRecipe = async(req, res) => {
-    try{
-        res.render('submit-recipe', {title: 'Cooking Blog - Submit Recipe'});
-    }catch(error){
-        res.status(500).send({message: error.message || 'Error Occured'});
-    }
+    const infoErrorsObj = req.flash('infoErrors');
+    const infoSubmitObj = req.flash('infoSubmit');
+    res.render('submit-recipe', {title: 'Cooking Blog - Submit Recipe', infoErrorsObj, infoSubmitObj});
 };
 /**
- *  GET /submit-recipe
+ *  Post /submit-recipe
  *  
  */
 exports.submitRecipeOnPost = async(req, res) => {
-    try{
-        res.render('submit-recipe', {title: 'Cooking Blog - Submit Recipe'});
-    }catch(error){
-        res.status(500).send({message: error.message || 'Error Occured'});
+    try {
+        let imageUploadFile;
+        let uploadPath;
+        let newImageName;
+
+        if(!req.files || Object.keys(req.files).length === 0){
+            console.log('No File uploaded.');
+        }else{
+            imageUploadFile = req.files.image;
+            console.log(imageUploadFile);
+            console.log(imageUploadFile.name);
+            console.log(Date.now());
+            newImageName = Date.now() + imageUploadFile.name;
+            uploadPath = require('path').resolve('./') + '/public/uploads/' + newImageName;
+
+            imageUploadFile.mv(uploadPath, function(err){
+                if(err) return res.status(500).send(err);
+            });
+        }
+
+
+        const newRecipe = new Recipe({
+            name: req.body.name,
+            description: req.body.description,
+            email: req.body.email,
+            ingredients: req.body.ingredients,
+            category: req.body.category,
+            image: newImageName,
+        });
+        await newRecipe.save();
+
+        req.flash('infoSubmit', 'Recipe has been added.');
+        res.redirect('/submit-recipe'); 
+    } catch (error) {
+        // res.json(error);
+        req.flash('infoErrors', error.message);
+        res.redirect('/submit-recipe'); 
     }
 };
+
+
+async function updateRecipe(){
+    try{
+        const res = await Recipe.updateOne({name: 'Fori Okto'},{$set:{name: 'Fori Okto Updated'}});
+        res.n; //number of document matched;
+        res.nModified; //Number of documents modified
+    }catch(error){
+        console.log(error);
+    }
+}
+updateRecipe();
 
 
 //! insert data to categories
@@ -205,16 +248,16 @@ exports.submitRecipeOnPost = async(req, res) => {
 // const dummyData =
 //     [
 //         { 
-            // "name": "Recipe One",
-            // "description": `Recipe Description Goes Here`,
-            // "email": "recipeemail@raddy.co.uk",
-            // "ingredients": [
-            //     "1 level teaspoon baking powder",
-            //     "1 level teaspoon cayenne pepper",
-            //     "1 level teaspoon hot smoked paprika",
-            // ],
-            // "category": "American", 
-            // "image": "southern-friend-chicken.jpg"
+//             "name": "Recipe testeteteete",
+//             "description": `Recipe Description Goes Here`,
+//             "email": "recipeemail@raddy.co.uk",
+//             "ingredients": [
+//                 "1 level teaspoon baking powder",
+//                 "1 level teaspoon cayenne pepper",
+//                 "1 level teaspoon hot smoked paprika",
+//             ],
+//             "category": "American", 
+//             "image": "southern-friend-chicken.jpg"
 //         },
 //         { 
 //             "name": "Recipe Two",
@@ -260,3 +303,21 @@ when rest render is we can pass the object from route,
 and get the object using  : <%= typeof title != 'undefined' ? title: 'Cooking Blog - Made with Node.js'%>
 
 */
+/**
+//! Penjelasan mengenai flash
+flash is simple message for express
+how it works?
+1. first we created variable that include flash for infoError and infoSubmit that has object in / bring it on //?GET /submit-recipe
+2. in //?POST /submit-recipe
+    we call info submit and create message //?req.flash([type], msg) => req.flash('infoSubmit', 'Recipe has been added.');
+*/
+// const newRecipe = new Recipe({
+//     name: 'New Chocolate Cake',
+//     description: 'Chocolate Cake Description...',
+//     email: 'hello@gmail.com',
+//     ingredients: 'water',
+//     category: 'Indonesia',
+//     image: 'indonesia.jpg',
+// });
+// await newRecipe.save();
+/**THIS IS HARD DATA TO POST ON recipe-submit */
