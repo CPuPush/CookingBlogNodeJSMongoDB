@@ -188,19 +188,29 @@ exports.submitRecipeOnPost = async(req, res) => {
     }
 };
 
+// ! UPDATE
+// async function updateRecipe(){
+//     try{
+//         const res = await Recipe.updateOne({name: 'Fori Okto'},{$set:{name: 'Fori Okto Updated'}});
+//         res.n; //number of document matched;
+//         res.nModified; //Number of documents modified
+//     }catch(error){
+//         console.log(error);
+//     }
+// }
+// updateRecipe();
 
-async function updateRecipe(){
+// ! DELETE
+async function deleteRecipe(){
     try{
-        const res = await Recipe.updateOne({name: 'Fori Okto'},{$set:{name: 'Fori Okto Updated'}});
+        const res = await Recipe.deleteOne({name: 'test'});
         res.n; //number of document matched;
         res.nModified; //Number of documents modified
     }catch(error){
         console.log(error);
     }
 }
-updateRecipe();
-
-
+deleteRecipe();
 //! insert data to categories
 // const dummyData =
 //     [
